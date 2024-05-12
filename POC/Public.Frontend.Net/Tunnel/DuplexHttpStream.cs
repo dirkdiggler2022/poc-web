@@ -7,10 +7,11 @@ internal class DuplexHttpStream : Stream, IValueTaskSource<object?>, ICloseable
     private readonly object _sync = new();
 
     private readonly HttpContext _context;
-
+    private string _connectionId;
     public DuplexHttpStream(HttpContext context)
     {
         _context = context;
+        _connectionId = context.Connection.Id;
     }
 
     private Stream RequestBody => _context.Request.Body;

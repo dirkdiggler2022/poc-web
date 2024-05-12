@@ -20,28 +20,36 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
 
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
     {
+        
         base.ConfigureHandler(context, handler);
 
-        var previous = handler.ConnectCallback ?? DefaultConnectCallback;
+        var previous = handler.ConnectCallback;// ?? DefaultConnectCallback(context,_clusterConnections;
 
-        static async ValueTask<Stream> DefaultConnectCallback(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
-        {
-            var socket = new Socket(SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-            try
-            {
-                await socket.ConnectAsync(context.DnsEndPoint, cancellationToken);
-                return new NetworkStream(socket, ownsSocket: true);
-            }
-            catch
-            {
-                socket.Dispose();
-                throw;
-            }
-        }
+        //static async ValueTask<Stream> DefaultConnectCallback(SocketsHttpConnectionContext context, ConcurrentDictionary<string, (Channel<int>, Channel<Stream>)> connections, CancellationToken cancellationToken)
+        //{
+
+        //    //var socket = new Socket(SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+        //    //try
+        //    //{
+        //    //    await socket.ConnectAsync(context.DnsEndPoint, cancellationToken);
+        //    //    return new NetworkStream(socket, ownsSocket: true);
+        //    //}
+        //    //catch
+        //    //{
+        //    //    socket.Dispose();
+        //    //    throw;
+        //    //}
+        //}
+
+
 
         handler.ConnectCallback = async (context, cancellationToken) =>
         {
-            if (_clusterConnections.TryGetValue(context.DnsEndPoint.Host, out var pair))
+            var key =
+                $"{context.InitialRequestMessage.RequestUri.Host}{context.InitialRequestMessage.RequestUri.PathAndQuery}";
+
+
+            if (_clusterConnections.TryGetValue(key, out var pair))
             {
                 var (requests, responses) = pair;
 

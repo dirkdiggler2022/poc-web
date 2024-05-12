@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 using Yarp.ReverseProxy.Forwarder;
 
 public static class TunnelExensions
@@ -18,6 +19,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
+       
         return routes.MapPost(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
         {
             // HTTP/2 duplex stream
@@ -26,6 +28,7 @@ public static class TunnelExensions
                 return Results.BadRequest();
             }
 
+            context.Request.Headers.Add("x-connection-id",context.Connection.Id);
             var (requests, responses) = tunnelFactory.GetConnectionChannel(host);
 
             await requests.Reader.ReadAsync(context.RequestAborted);
@@ -49,6 +52,35 @@ public static class TunnelExensions
         });
     }
 
+    public static IEndpointConventionBuilder MapDynamicRoutes(this IEndpointRouteBuilder routes, string path)
+    {
+       return  routes.MapGet(path,
+            static async (HttpContext context, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+            {
+                var id = $"backend.app/Horses/1";
+                var (requests, responses) = tunnelFactory.GetConnectionChannel(id);
+
+                await requests.Reader.ReadAsync(context.RequestAborted);
+
+                var stream = new DuplexHttpStream(context);
+
+                using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
+
+                // Keep reusing this connection while, it's still open on the backend
+                while (!context.RequestAborted.IsCancellationRequested)
+                {
+                    // Make this connection available for requests
+                    await responses.Writer.WriteAsync(stream, context.RequestAborted);
+
+                    await stream.StreamCompleteTask;
+
+                    stream.Reset();
+                }
+
+                return EmptyResult.Instance;
+            });
+
+    }
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
         var conventionBuilder = routes.MapGet(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>

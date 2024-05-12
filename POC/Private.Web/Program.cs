@@ -44,6 +44,11 @@ namespace Private.Web
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapGet("/Horses/{id}", () =>
+            {
+                return "Hello Workld";
+            });
             app.MapRazorPages();
 
             //app.Map("/", async (HttpContext context) =>

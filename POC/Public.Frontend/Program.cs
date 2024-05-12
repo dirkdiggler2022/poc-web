@@ -28,6 +28,15 @@ namespace Public.Frontend
             // to avoid exteranl traffic hitting it
             app.MapHttp2Tunnel("/connect-h2");
 
+          //  app.MapDynamicRoutes("/Horses/{id}");
+        
+            //app.MapGet("/",
+            //    static async (HttpContext context, 
+            //        IHostApplicationLifetime lifetime) =>
+            //    {
+            //        var x = "Y";
+            //    });
+
             app.Run();
         }
     }
