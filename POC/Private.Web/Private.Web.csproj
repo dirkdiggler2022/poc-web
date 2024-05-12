@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-Private.Web-b8f9516a-7292-4763-82e0-cb81a6f36842</UserSecretsId>
+    <UserSecretsId>aspnet-Private.Web-c2dca4c2-0c39-4beb-8fa9-2af20248f5bb</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
