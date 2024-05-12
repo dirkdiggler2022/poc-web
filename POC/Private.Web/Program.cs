@@ -46,6 +46,14 @@ namespace Private.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            //app.Map("/", async (HttpContext context) =>
+            //{
+            //    // This is hardcoded to a single backend, but that's just for the demo
+
+
+            //    return "Hello World";
+            //});
+
             app.Run();
         }
     }

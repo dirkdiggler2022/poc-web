@@ -17,8 +17,6 @@ namespace Private.Agent
 
             app.MapReverseProxy();
 
-           // app.MapGet("/", () => "Hello World!");
-
             app.Run();
         }
     }
