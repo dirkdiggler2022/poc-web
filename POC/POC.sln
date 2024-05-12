@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Web", "Private.Web\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Net", "Private.Agent.Net\Private.Agent.Net.csproj", "{7A016F34-55B5-47F9-8848-4F11CB8DE10D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Frontend.Net", "Public.Frontend.Net\Public.Frontend.Net.csproj", "{2FD47740-2221-485F-89A8-CFB305891C89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{7A016F34-55B5-47F9-8848-4F11CB8DE10D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A016F34-55B5-47F9-8848-4F11CB8DE10D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A016F34-55B5-47F9-8848-4F11CB8DE10D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FD47740-2221-485F-89A8-CFB305891C89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FD47740-2221-485F-89A8-CFB305891C89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FD47740-2221-485F-89A8-CFB305891C89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FD47740-2221-485F-89A8-CFB305891C89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{AEBFA239-D433-4BA6-9F32-2A30B031D9EA} = {1F5E34B6-5667-4BE3-8491-E8FD8E6892E3}
 		{CC396A03-E053-4699-BB9F-6BD4D2060194} = {137D5E6B-3357-4A58-9D76-6DC1A23A87E1}
 		{7A016F34-55B5-47F9-8848-4F11CB8DE10D} = {137D5E6B-3357-4A58-9D76-6DC1A23A87E1}
+		{2FD47740-2221-485F-89A8-CFB305891C89} = {1F5E34B6-5667-4BE3-8491-E8FD8E6892E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {27C8CCE9-7D73-427B-AAD7-51AEBE5C481A}
