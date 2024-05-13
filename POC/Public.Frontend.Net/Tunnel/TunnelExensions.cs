@@ -8,6 +8,7 @@ using Yarp.ReverseProxy.Forwarder;
 
 public static class TunnelExensions
 {
+ 
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
         var tunnelFactory = new TunnelClientFactory();
@@ -18,7 +19,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
-        return routes.MapPost(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        return routes.MapPost(path, static async (HttpContext context, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
         {
             // HTTP/2 duplex stream
             if (context.Request.Protocol != HttpProtocol.Http2)
@@ -26,11 +27,12 @@ public static class TunnelExensions
                 return Results.BadRequest();
             }
 
-            var (requests, responses) = tunnelFactory.GetConnectionChannel(host);
+            var (requests, responses) = tunnelFactory.GetConnectionChannel(context.Request.Path);
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
             var stream = new DuplexHttpStream(context);
+ 
 
             using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
 

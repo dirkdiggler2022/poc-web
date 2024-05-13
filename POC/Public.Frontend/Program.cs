@@ -26,7 +26,7 @@ namespace Public.Frontend
 
             // Auth can be added to this endpoint and we can restrict it to certain points
             // to avoid exteranl traffic hitting it
-            app.MapHttp2Tunnel("/connect-h2");
+            app.MapHttp2Tunnel("/connect-h2/{id}");
 
             app.Run();
         }

@@ -18,6 +18,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
         return _clusterConnections.GetOrAdd(host, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
     }
 
+    //foreach path defined you this gets called
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
     {
         base.ConfigureHandler(context, handler);
