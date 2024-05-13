@@ -13,15 +13,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent", "Private.Ag
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{58ED08F8-2C39-49B8-9AF7-93B887F7C0BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Tests", "Public.Tests\Public.Tests.csproj", "{E1E5DA2E-618B-496C-BB18-383957C81D84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Tests", "Public.Tests\Public.Tests.csproj", "{E1E5DA2E-618B-496C-BB18-383957C81D84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Web", "Public.Web\Public.Web.csproj", "{AEBFA239-D433-4BA6-9F32-2A30B031D9EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Web", "Private.Web\Private.Web.csproj", "{CC396A03-E053-4699-BB9F-6BD4D2060194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Net", "Private.Agent.Net\Private.Agent.Net.csproj", "{7A016F34-55B5-47F9-8848-4F11CB8DE10D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent.Net", "Private.Agent.Net\Private.Agent.Net.csproj", "{7A016F34-55B5-47F9-8848-4F11CB8DE10D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Frontend.Net", "Public.Frontend.Net\Public.Frontend.Net.csproj", "{2FD47740-2221-485F-89A8-CFB305891C89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Frontend.Net", "Public.Frontend.Net\Public.Frontend.Net.csproj", "{2FD47740-2221-485F-89A8-CFB305891C89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
