@@ -1,4 +1,4 @@
-﻿internal interface ICloseable
+﻿public interface ICloseable
 {
     bool IsClosed { get; }
     void Abort();

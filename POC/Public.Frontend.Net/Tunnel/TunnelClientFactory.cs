@@ -7,7 +7,7 @@ using Yarp.ReverseProxy.Forwarder;
 /// <summary>
 /// The factory that YARP will use the create outbound connections by host name.
 /// </summary>
-internal class TunnelClientFactory : ForwarderHttpClientFactory
+public class TunnelClientFactory : ForwarderHttpClientFactory
 {
     // TODO: These values should be populated by configuration so there's no need to remove
     // channels.
@@ -18,6 +18,11 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
         return _clusterConnections.GetOrAdd(host, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
     }
 
+    
+    public void ConfigureHandlerPublic(ForwarderHttpClientContext context, SocketsHttpHandler handler)
+    {
+        this.ConfigureHandler(context,handler);
+    }
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
     {
         base.ConfigureHandler(context, handler);
@@ -50,6 +55,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
 
                 while (true)
                 {
+                    
                     var stream = await responses.Reader.ReadAsync(cancellationToken);
 
                     if (stream is ICloseable c && c.IsClosed)
@@ -64,6 +70,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
                 }
             }
             return await previous(context, cancellationToken);
+
         };
     }
 }

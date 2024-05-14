@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks.Sources;
+using Microsoft.AspNetCore.SignalR;
 
-internal class DuplexHttpStream : Stream, IValueTaskSource<object?>, ICloseable
+public class DuplexHttpStream : Stream, IValueTaskSource<object?>, ICloseable
 {
     private ManualResetValueTaskSourceCore<object?> _tcs = new() { RunContinuationsAsynchronously = true };
     private readonly object _sync = new();
@@ -26,7 +27,12 @@ internal class DuplexHttpStream : Stream, IValueTaskSource<object?>, ICloseable
 
     public override bool CanWrite => true;
 
-    public override long Length => throw new NotSupportedException();
+    public override long Length {
+        get
+        {
+            throw new NotSupportedException();
+        }
+    }
 
     public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 

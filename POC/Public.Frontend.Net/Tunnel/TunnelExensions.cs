@@ -1,4 +1,7 @@
-﻿using System.Net.WebSockets;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Net.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -11,8 +14,10 @@ public static class TunnelExensions
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
         var tunnelFactory = new TunnelClientFactory();
+
         services.AddSingleton(tunnelFactory);
         services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
+        
         return services;
     }
 
@@ -48,6 +53,15 @@ public static class TunnelExensions
             return EmptyResult.Instance;
         });
     }
+
+    public static void AddProxyServices(this IEndpointRouteBuilder routes)
+    {
+        var httpClientContext = routes.ServiceProvider.GetRequiredService<ForwarderHttpClientContext>();
+        var factory = routes.ServiceProvider.GetRequiredService<IForwarderHttpClientFactory>();
+        factory.CreateClient(httpClientContext);
+
+    }
+
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
