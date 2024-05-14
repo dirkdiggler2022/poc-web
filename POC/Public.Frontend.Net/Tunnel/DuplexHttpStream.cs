@@ -17,7 +17,7 @@ public class DuplexHttpStream : Stream, IValueTaskSource<object?>, ICloseable
     private Stream RequestBody => _context.Request.Body;
     private Stream ResponseBody => _context.Response.Body;
 
-    internal ValueTask<object?> StreamCompleteTask => new(this, _tcs.Version);
+    public ValueTask<object?> StreamCompleteTask => new(this, _tcs.Version);
 
     public bool IsClosed => _context.RequestAborted.IsCancellationRequested;
 

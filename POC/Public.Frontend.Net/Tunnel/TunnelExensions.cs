@@ -14,7 +14,6 @@ public static class TunnelExensions
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
         var tunnelFactory = new TunnelClientFactory();
-
         services.AddSingleton(tunnelFactory);
         services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
         
@@ -54,13 +53,13 @@ public static class TunnelExensions
         });
     }
 
-    public static void AddProxyServices(this IEndpointRouteBuilder routes)
-    {
-        var httpClientContext = routes.ServiceProvider.GetRequiredService<ForwarderHttpClientContext>();
-        var factory = routes.ServiceProvider.GetRequiredService<IForwarderHttpClientFactory>();
-        factory.CreateClient(httpClientContext);
+    //public static void AddProxyServices(this IEndpointRouteBuilder routes)
+    //{
+    //    //var httpClientContext = routes.ServiceProvider.GetRequiredService<ForwarderHttpClientContext>();
+    //    var factory = routes.ServiceProvider.GetRequiredService<IForwarderHttpClientFactory>();
+    //    factory.CreateClient(httpClientContext);
 
-    }
+    //}
 
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
@@ -109,9 +108,9 @@ public static class TunnelExensions
     }
 
     // This is for .NET 6, .NET 7 has Results.Empty
-    internal sealed class EmptyResult : IResult
+    public sealed class EmptyResult : IResult
     {
-        internal static readonly EmptyResult Instance = new();
+        public static readonly EmptyResult Instance = new();
 
         public Task ExecuteAsync(HttpContext httpContext)
         {
