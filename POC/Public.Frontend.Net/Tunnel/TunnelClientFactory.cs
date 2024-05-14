@@ -22,6 +22,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
     {
         base.ConfigureHandler(context, handler);
 
+
         var previous = handler.ConnectCallback ?? DefaultConnectCallback;
 
         static async ValueTask<Stream> DefaultConnectCallback(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
@@ -38,10 +39,12 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
                 throw;
             }
         }
-
+     
         handler.ConnectCallback = async (context, cancellationToken) =>
         {
-            if (_clusterConnections.TryGetValue(context.DnsEndPoint.Host, out var pair))
+            //turtles
+            var id= context.InitialRequestMessage.RequestUri.Query.Replace("?id=","").Trim();
+            if (_clusterConnections.TryGetValue($"{context.DnsEndPoint.Host}:{id}", out var pair))
             {
                 var (requests, responses) = pair;
 

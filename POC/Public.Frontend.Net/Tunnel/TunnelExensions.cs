@@ -26,7 +26,7 @@ public static class TunnelExensions
                 return Results.BadRequest();
             }
 
-            var (requests, responses) = tunnelFactory.GetConnectionChannel(host);
+            var (requests, responses) = tunnelFactory.GetConnectionChannel($"{host}:turtles");
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 

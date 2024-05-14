@@ -74,10 +74,13 @@ internal class HttpClientConnectionContext : ConnectionContext,
         {
             Version = new Version(2, 0)
         };
+        request.Headers.Add("PurpleDerple","Yup");
         var connection = new HttpClientConnectionContext();
         request.Content = new HttpClientConnectionContextContent(connection);
         var response = await invoker.SendAsync(request, cancellationToken).ConfigureAwait(false);
         connection.HttpResponseMessage = response;
+        connection.HttpResponseMessage.Headers.Add("PurpleResponseHeader","GoodStuff");
+        connection.HttpResponseMessage.RequestMessage?.Headers.Add("Bird",new List<string?>{"Turtle"});
         var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         connection.Input = PipeReader.Create(responseStream);
 
@@ -88,9 +91,11 @@ internal class HttpClientConnectionContext : ConnectionContext,
     {
         private readonly HttpClientConnectionContext _connectionContext;
 
+        
         public HttpClientConnectionContextContent(HttpClientConnectionContext connectionContext)
         {
             _connectionContext = connectionContext;
+          
         }
 
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)

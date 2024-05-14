@@ -12,9 +12,9 @@ namespace Private.Agent
             var url = builder.Configuration["Tunnel:Url"]!;
 
             builder.WebHost.UseTunnelTransport(url);
-
+       
             var app = builder.Build();
-
+        
             app.MapReverseProxy();
 
             app.Run();
