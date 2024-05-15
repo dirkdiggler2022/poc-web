@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Public.Frontend.Net.Tunnel;
 using Yarp.ReverseProxy.Forwarder;
 
-public static class TunnelExensions
+namespace Public.Frontend.Net.Tunnel;
+
+public static class TunnelExtensions
 {
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
         var tunnelFactory = new TunnelClientFactory();
         services.AddSingleton(tunnelFactory);
         services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
-        //tunnelFactory.CreateClient()
         return services;
     }
 
@@ -54,6 +54,7 @@ public static class TunnelExensions
         });
     }
 
+    //not using web sockets, but we might, so we will keep this
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
         var conventionBuilder = routes.MapGet(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
@@ -99,14 +100,23 @@ public static class TunnelExensions
         return conventionBuilder;
     }
 
+
+    //below are helpers to get the correct host, we do not know exactly how we will
+    // end up doing this, but it will suffice for dev
+
+    //gets key when connect is called to set up initial connection
     public static string GetConnectionKey(this HttpContext context)
     {
         return context.Request.Host.ToString();
     }
 
-    public static string GetConnectionKey(this SocketsHttpConnectionContext context)
+    //gets the connection key when calls to proxy are made 
+    public static string? GetConnectionKey(this SocketsHttpConnectionContext context)
     {
-        return "localhost:7243";
+        if (context.InitialRequestMessage.Headers.TryGetValues("X-Forwarded-Host", out var tryValues))
+            return tryValues.SingleOrDefault() ?? string.Empty;
+
+        return null;
     }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult
