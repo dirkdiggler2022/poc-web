@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Public.Frontend.Net.Tunnel;
 using Yarp.ReverseProxy.Forwarder;
 
 public static class TunnelExensions
@@ -20,15 +21,17 @@ public static class TunnelExensions
   
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
-        return routes.MapPost(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        return routes.MapPost(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
         {
+            //var tenant = $"{context.Request?.RouteValues?["tenant"]}";
             // HTTP/2 duplex stream
             if (context.Request.Protocol != HttpProtocol.Http2)
             {
                 return Results.BadRequest();
             }
 
-            var (requests, responses) = tunnelFactory.GetConnectionChannel(host);
+            var connectionKey = context.GetConnectionKey();
+            var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
@@ -96,6 +99,15 @@ public static class TunnelExensions
         return conventionBuilder;
     }
 
+    public static string GetConnectionKey(this HttpContext context)
+    {
+        return context.Request.Host.ToString();
+    }
+
+    public static string GetConnectionKey(this SocketsHttpConnectionContext context)
+    {
+        return "localhost:7243";
+    }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult
     {

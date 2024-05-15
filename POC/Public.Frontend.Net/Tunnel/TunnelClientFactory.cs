@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading.Channels;
 using Yarp.ReverseProxy.Forwarder;
+
+namespace Public.Frontend.Net.Tunnel;
 
 /// <summary>
 /// The factory that YARP will use the create outbound connections by host name.
@@ -13,9 +14,9 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
     // channels.
     private readonly ConcurrentDictionary<string, (Channel<int>, Channel<Stream>)> _clusterConnections = new();
 
-    public (Channel<int>, Channel<Stream>) GetConnectionChannel(string host)
+    public (Channel<int>, Channel<Stream>) GetConnectionChannel(string key)
     {
-        return _clusterConnections.GetOrAdd(host, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
+        return _clusterConnections.GetOrAdd(key, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
     }
 
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
@@ -39,10 +40,11 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
             }
         }
 
-        handler.ConnectCallback = async (context, cancellationToken) =>
+        handler.ConnectCallback = async (connectionContext, cancellationToken) =>
         {
-            
-            if (_clusterConnections.TryGetValue(context.DnsEndPoint.Host, out var pair))
+            var connectionKey = connectionContext.GetConnectionKey();
+            //var host = connectionContext.InitialRequestMessage.Headers.Host;
+            if (_clusterConnections.TryGetValue(connectionKey, out var pair))
             {
                 var (requests, responses) = pair;
 
@@ -64,7 +66,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
                     return stream;
                 }
             }
-            return await previous(context, cancellationToken);
+            return await previous(connectionContext, cancellationToken);
         };
     }
 }
