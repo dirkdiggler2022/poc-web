@@ -13,6 +13,12 @@ namespace Public.Frontend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //allow alternate schemes so we can use ngrok
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AllowAlternateSchemes = true;
+            });
             builder.Services.AddHttpForwarder();
 
             var tx = new CustomTransformer();
@@ -20,6 +26,8 @@ namespace Public.Frontend
 
             var app = builder.Build();
 
+
+            //may be useful to transform requests
             //app.MapForwarder("/{**catch-all}", "http://backend1.app", (transform) =>
             //{
             //    transform.RequestTransforms.Add(new RequestFuncTransform((ctx) =>

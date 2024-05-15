@@ -107,16 +107,18 @@ public static class TunnelExtensions
     //gets key when connect is called to set up initial connection
     public static string GetConnectionKey(this HttpContext context)
     {
-        return context.Request.Host.ToString();
+        var result = context.Request.Host.ToString();
+        return result;
     }
 
     //gets the connection key when calls to proxy are made 
     public static string? GetConnectionKey(this SocketsHttpConnectionContext context)
     {
+        string? result = null;
         if (context.InitialRequestMessage.Headers.TryGetValues("X-Forwarded-Host", out var tryValues))
-            return tryValues.SingleOrDefault() ?? string.Empty;
-
-        return null;
+            result = tryValues.SingleOrDefault() ?? string.Empty;
+        return result;
+        
     }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult
