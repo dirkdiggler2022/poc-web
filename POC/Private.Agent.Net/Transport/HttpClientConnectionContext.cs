@@ -74,6 +74,7 @@ internal class HttpClientConnectionContext : ConnectionContext,
         {
             Version = new Version(2, 0)
         };
+        request.Headers.Add("Derbles",new List<string?>{"Burk"});
         var connection = new HttpClientConnectionContext();
         request.Content = new HttpClientConnectionContextContent(connection);
         var response = await invoker.SendAsync(request, cancellationToken).ConfigureAwait(false);
