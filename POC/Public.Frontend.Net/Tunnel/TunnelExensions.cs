@@ -13,9 +13,11 @@ public static class TunnelExensions
         var tunnelFactory = new TunnelClientFactory();
         services.AddSingleton(tunnelFactory);
         services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
+        //tunnelFactory.CreateClient()
         return services;
     }
 
+  
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
         return routes.MapPost(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
