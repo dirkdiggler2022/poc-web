@@ -10,10 +10,18 @@ namespace Public.Frontend
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpForwarder();
+
+
+            builder.Services.AddTunnelServices();
+
+
             var app = builder.Build();
 
-            app.MapForwarder("/{**catch-all}", "https://example.com");
+            app.MapForwarder("/{**catch-all}", "http://backend1.app");
 
+            app.MapHttp2Tunnel("/connect-h2");
+
+            //  app.MapReverseProxy()
             app.Run();
         }
 
