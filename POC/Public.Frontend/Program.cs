@@ -46,11 +46,11 @@ namespace Public.Frontend
             //allow alternate schemes so we can use ngrok
             builder.WebHost.ConfigureKestrel(options =>
             {
-               // options.AllowAlternateSchemes = true;
-                options.ConfigureEndpointDefaults(lo => lo.Protocols = HttpProtocols.Http1AndHttp2);
+                 options.AllowAlternateSchemes = true;
+                //options.ConfigureEndpointDefaults(lo => lo.Protocols = HttpProtocols.Http1AndHttp2);
             });
 
-         
+
             builder.Services.AddHttpForwarder();
 
             var tx = new CustomTransformer();
