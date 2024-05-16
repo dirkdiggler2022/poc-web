@@ -1,6 +1,8 @@
 using System.Net.Http;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography.Xml;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Public.Frontend.Net.Tunnel;
 using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Transforms;
@@ -10,6 +12,33 @@ namespace Public.Frontend
     public class Program
     {
 
+        //public static void Main(string[] args)
+        //{
+        //    var builder = WebApplication.CreateBuilder(args);
+
+        //    builder.WebHost.ConfigureKestrel(options =>
+        //    {
+        //        options.AllowAlternateSchemes = true;
+        //    });
+        //    builder.Services.AddReverseProxy()
+        //        .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+        //    builder.Services.AddTunnelServices();
+
+        //    var app = builder.Build();
+
+        //    app.MapReverseProxy();
+
+        //    // Uncomment to support websocket connections
+        //    app.MapWebSocketTunnel("/connect-ws");
+
+        //    // Auth can be added to this endpoint and we can restrict it to certain points
+        //    // to avoid exteranl traffic hitting it
+        //    app.MapHttp2Tunnel("/connect-h2");
+
+        //    app.Run();
+        //}
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +46,11 @@ namespace Public.Frontend
             //allow alternate schemes so we can use ngrok
             builder.WebHost.ConfigureKestrel(options =>
             {
-                options.AllowAlternateSchemes = true;
+               // options.AllowAlternateSchemes = true;
+                options.ConfigureEndpointDefaults(lo => lo.Protocols = HttpProtocols.Http1AndHttp2);
             });
+
+         
             builder.Services.AddHttpForwarder();
 
             var tx = new CustomTransformer();
