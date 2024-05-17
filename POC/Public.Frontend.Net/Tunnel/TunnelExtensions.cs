@@ -15,49 +15,57 @@ public static class TunnelExtensions
 {
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
-        var tunnelFactory = new TunnelClientFactory();
-        services.AddSingleton(tunnelFactory);
-        services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
-        return services;
+        //var tunnelFactory = new TunnelClientFactory();
+        //services.AddSingleton(tunnelFactory);
+        //services.AddScoped()
+        //services.AddSingleton<IForwarderHttpClientFactory>(tunnelFactory);
+       return services;
     }
 
-  
+    static async Task<IResult> Dirk(HttpContext context, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime)
+    {
+        //var tenant = $"{context.Request?.RouteValues?["tenant"]}";
+        // HTTP/2 duplex stream
+        if (context.Request.Protocol != HttpProtocol.Http2)
+        {
+            return Results.BadRequest();
+        }
+
+        var connectionKey = context.GetConnectionKey();
+
+        StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected"));
+
+        var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
+
+        await requests.Reader.ReadAsync(context.RequestAborted);
+
+        var stream = new DuplexHttpStream(context);
+
+        using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
+
+        // Keep reusing this connection while, it's still open on the backend
+        while (!context.RequestAborted.IsCancellationRequested)
+        {
+            // Make this connection available for requests
+            await responses.Writer.WriteAsync(stream, context.RequestAborted);
+
+            await stream.StreamCompleteTask;
+
+            stream.Reset();
+        }
+
+        return EmptyResult.Instance;
+    }
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
-        return routes.MapPost(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        
+        return routes.MapPost(path,static async (HttpContext context, IHostApplicationLifetime lifetime) =>
         {
-            //var tenant = $"{context.Request?.RouteValues?["tenant"]}";
-            // HTTP/2 duplex stream
-            if (context.Request.Protocol != HttpProtocol.Http2)
-            {
-                return Results.BadRequest();
-            }
-
-            var connectionKey = context.GetConnectionKey();
-
-            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected"));
-
-            var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
-
-            await requests.Reader.ReadAsync(context.RequestAborted);
-
-            var stream = new DuplexHttpStream(context);
-
-            using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
-
-            // Keep reusing this connection while, it's still open on the backend
-            while (!context.RequestAborted.IsCancellationRequested)
-            {
-                // Make this connection available for requests
-                await responses.Writer.WriteAsync(stream, context.RequestAborted);
-
-                await stream.StreamCompleteTask;
-
-                stream.Reset();
-            }
-
-            return EmptyResult.Instance;
+            var tunnelAgentContext = new TunnelAgentContext();
+            return await tunnelAgentContext.MapConnectionInit(context, lifetime);
         });
+
+
     }
 
     //not using web sockets, but we might, so we will keep this
