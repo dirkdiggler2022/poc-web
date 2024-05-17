@@ -41,7 +41,9 @@ namespace Public.Frontend
             //var requestOptions = new ForwarderRequestConfig { ActivityTimeout = TimeSpan.FromSeconds(100),  };
 
            // app.MapForwarder("/{**catch-all}", "http://backend1.app");
-            app.MapHttp2Tunnel("/connect-h2");
+            app.MapHttp2Tunnel("/connect-h2/Agent1");
+            app.MapHttp2Tunnel("/connect-h2/Agent2");
+            app.MapHttp2Tunnel("/connect-h2/Agent3");
 
             app.Run();
         }
