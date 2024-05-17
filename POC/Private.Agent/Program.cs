@@ -11,6 +11,11 @@ namespace Private.Agent
 
             var url = builder.Configuration["Tunnel:Url"]!;
 
+            //overload listen 
+            if (args.Length > 0 && Uri.TryCreate(args[0].ToString(), UriKind.Absolute, out var test))
+                url = test.ToString();
+
+
             builder.WebHost.UseTunnelTransport(url);
 
             var app = builder.Build();
