@@ -1,9 +1,12 @@
 ﻿using System.Net.WebSockets;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Public.Frontend.Net.Utilities;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace Public.Frontend.Net.Tunnel;
@@ -31,6 +34,9 @@ public static class TunnelExtensions
             }
 
             var connectionKey = context.GetConnectionKey();
+
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected"));
+
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
             await requests.Reader.ReadAsync(context.RequestAborted);
@@ -107,18 +113,22 @@ public static class TunnelExtensions
     //gets key when connect is called to set up initial connection
     public static string GetConnectionKey(this HttpContext context)
     {
-        var result = context.Request.Host.ToString();
+        //for testing
+        var result = context.Request.Query["host"][0];
+       // var result = context.Request.Host.ToString();
         return result;
     }
 
     //gets the connection key when calls to proxy are made 
     public static string? GetConnectionKey(this SocketsHttpConnectionContext context)
     {
+       // var hostHeader = "X-Forwarded-Host";
+        var hostHeader = "host-param";
         string? result = null;
-        if (context.InitialRequestMessage.Headers.TryGetValues("X-Forwarded-Host", out var tryValues))
+        if (context.InitialRequestMessage.Headers.TryGetValues(hostHeader, out var tryValues))
             result = tryValues.SingleOrDefault() ?? string.Empty;
         return result;
-        
+
     }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult

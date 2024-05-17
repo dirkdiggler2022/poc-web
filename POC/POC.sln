@@ -7,21 +7,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Public", "Public", "{1F5E34
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Private", "Private", "{137D5E6B-3357-4A58-9D76-6DC1A23A87E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Frontend", "Public.Frontend\Public.Frontend.csproj", "{111F5335-76CB-436A-903E-DB8F40785F45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Frontend", "Public.Frontend\Public.Frontend.csproj", "{111F5335-76CB-436A-903E-DB8F40785F45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent", "Private.Agent\Private.Agent.csproj", "{BF539FAC-31CE-4322-9BC3-773445103EA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent", "Private.Agent\Private.Agent.csproj", "{BF539FAC-31CE-4322-9BC3-773445103EA4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{58ED08F8-2C39-49B8-9AF7-93B887F7C0BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Tests", "Public.Tests\Public.Tests.csproj", "{E1E5DA2E-618B-496C-BB18-383957C81D84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Tests", "Public.Tests\Public.Tests.csproj", "{E1E5DA2E-618B-496C-BB18-383957C81D84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Web", "Public.Web\Public.Web.csproj", "{AEBFA239-D433-4BA6-9F32-2A30B031D9EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Web", "Public.Web\Public.Web.csproj", "{AEBFA239-D433-4BA6-9F32-2A30B031D9EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Web", "Private.Web\Private.Web.csproj", "{CC396A03-E053-4699-BB9F-6BD4D2060194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Web", "Private.Web\Private.Web.csproj", "{CC396A03-E053-4699-BB9F-6BD4D2060194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Net", "Private.Agent.Net\Private.Agent.Net.csproj", "{7A016F34-55B5-47F9-8848-4F11CB8DE10D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent.Net", "Private.Agent.Net\Private.Agent.Net.csproj", "{7A016F34-55B5-47F9-8848-4F11CB8DE10D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Frontend.Net", "Public.Frontend.Net\Public.Frontend.Net.csproj", "{2FD47740-2221-485F-89A8-CFB305891C89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Public.Frontend.Net", "Public.Frontend.Net\Public.Frontend.Net.csproj", "{2FD47740-2221-485F-89A8-CFB305891C89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Tests.ConsoleRunner", "Public.Tests.ConsoleRunner\Public.Tests.ConsoleRunner.csproj", "{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{2FD47740-2221-485F-89A8-CFB305891C89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FD47740-2221-485F-89A8-CFB305891C89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FD47740-2221-485F-89A8-CFB305891C89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{CC396A03-E053-4699-BB9F-6BD4D2060194} = {137D5E6B-3357-4A58-9D76-6DC1A23A87E1}
 		{7A016F34-55B5-47F9-8848-4F11CB8DE10D} = {137D5E6B-3357-4A58-9D76-6DC1A23A87E1}
 		{2FD47740-2221-485F-89A8-CFB305891C89} = {1F5E34B6-5667-4BE3-8491-E8FD8E6892E3}
+		{E1A117C0-1D62-4EFD-B906-7BB85D2F4A79} = {58ED08F8-2C39-49B8-9AF7-93B887F7C0BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {27C8CCE9-7D73-427B-AAD7-51AEBE5C481A}
