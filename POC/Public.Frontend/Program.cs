@@ -30,7 +30,7 @@ namespace Public.Frontend
                             var headerValue = transformContext.HttpContext.Request.RouteValues["agent"].ToString();
                             transformContext.ProxyRequest.Headers.Add("host-param", headerValue);
 
-                            var path = transformContext.HttpContext.Request.Path.ToString().Replace($"/{headerValue}", "");
+                            var path = transformContext.HttpContext.Request.Path.ToString().Replace($"/{headerValue}", "").Replace("/Proxy1","").Replace("/Proxy2","");
                             transformContext.ProxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", path, queryContext.QueryString);
                             //  proxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", httpContext.Request.Path, queryContext.QueryString);
                         }
