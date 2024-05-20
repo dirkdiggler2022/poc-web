@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.Xml;
+using Microsoft.AspNetCore.Http;
 using Public.Frontend.Net.Tunnel;
 using Public.Frontend.Net.Utilities;
 using Yarp.ReverseProxy.Forwarder;
@@ -10,43 +11,51 @@ namespace Public.Frontend
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Logging.AddConsole();
-            //allow alternate schemes so we can use ngrok
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                options.AllowAlternateSchemes = true;
-                
-            });
-            builder.Services.AddHttpForwarder();
 
-            var tx = new CustomTransformer();
+            builder.Services.AddReverseProxy()
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+                .AddTransforms(builderContext =>
+                {
+
+                    builderContext.AddRequestTransform(async (transformContext) =>
+                    {
+                        var queryContext = new QueryTransformContext(transformContext.HttpContext.Request);
+ 
+
+                        if (transformContext.HttpContext.Request.RouteValues.ContainsKey("agent"))
+                        {
+                            var headerValue = transformContext.HttpContext.Request.RouteValues["agent"].ToString();
+                            transformContext.ProxyRequest.Headers.Add("host-param", headerValue);
+
+                            var path = transformContext.HttpContext.Request.Path.ToString().Replace($"/{headerValue}", "");
+                            transformContext.ProxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", path, queryContext.QueryString);
+                            //  proxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", httpContext.Request.Path, queryContext.QueryString);
+                        }
+                        
+                    });
+                });
+
+
             builder.Services.AddTunnelServices();
 
             var app = builder.Build();
 
-            ApplicationLogging.LoggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+            app.MapReverseProxy();
 
-            app.MapForwarder("/{**catch-all}", "http://backend1.app", (transform) =>
-            {
-                transform.RequestTransforms.Add(new RequestFuncTransform(async (ctx) =>
-                {
-                   await tx.TransformRequestAsync(ctx.HttpContext, ctx.ProxyRequest, ctx.DestinationPrefix,
-                        ctx.CancellationToken);
-                }));
-            });
-            //var requestOptions = new ForwarderRequestConfig { ActivityTimeout = TimeSpan.FromSeconds(100),  };
+            // Uncomment to support websocket connections
+            app.MapWebSocketTunnel("/connect-ws");
 
-           // app.MapForwarder("/{**catch-all}", "http://backend1.app");
-            app.MapHttp2Tunnel("/connect-h2/Agent1");
-            app.MapHttp2Tunnel("/connect-h2/Agent2");
-            app.MapHttp2Tunnel("/connect-h2/Agent3");
+            // Auth can be added to this endpoint and we can restrict it to certain points
+            // to avoid exteranl traffic hitting it
+            app.MapHttp2Tunnel("/connect-h2/{agent}");
 
             app.Run();
+
         }
+
 
     }
 
@@ -81,6 +90,7 @@ namespace Public.Frontend
                 proxyRequest.Headers.Add("host-param", new List<string?> { host});
                 queryContext.Collection.Remove("host");
             }
+            
             //proxyRequest.Headers.Add("tenant", new List<string?>{ tenant });
             //queryContext.Collection.Remove("param1");
             //queryContext.Collection["area"] = "xx2";

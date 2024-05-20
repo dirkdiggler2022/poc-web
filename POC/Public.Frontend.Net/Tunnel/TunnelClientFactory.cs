@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading.Channels;
+using Public.Frontend.Net.Tunnel;
 using Yarp.ReverseProxy.Forwarder;
-
-namespace Public.Frontend.Net.Tunnel;
 
 /// <summary>
 /// The factory that YARP will use the create outbound connections by host name.
@@ -14,15 +14,16 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
     // channels.
     private readonly ConcurrentDictionary<string, (Channel<int>, Channel<Stream>)> _clusterConnections = new();
 
-    public (Channel<int>, Channel<Stream>) GetConnectionChannel(string key)
+    public (Channel<int>, Channel<Stream>) GetConnectionChannel(string host)
     {
-        return _clusterConnections.GetOrAdd(key, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
+        return _clusterConnections.GetOrAdd(host, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
     }
 
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
     {
         base.ConfigureHandler(context, handler);
 
+        
         var previous = handler.ConnectCallback ?? DefaultConnectCallback;
 
         static async ValueTask<Stream> DefaultConnectCallback(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
@@ -40,10 +41,9 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
             }
         }
 
-        handler.ConnectCallback = async (connectionContext, cancellationToken) =>
+        handler.ConnectCallback = async (context, cancellationToken) =>
         {
-            var connectionKey = connectionContext.GetConnectionKey();
-            //var host = connectionContext.InitialRequestMessage.Headers.Host;
+            var connectionKey = context.GetConnectionKey();
             if (_clusterConnections.TryGetValue(connectionKey, out var pair))
             {
                 var (requests, responses) = pair;
@@ -66,7 +66,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
                     return stream;
                 }
             }
-            return await previous(connectionContext, cancellationToken);
+            return await previous(context, cancellationToken);
         };
     }
 }
