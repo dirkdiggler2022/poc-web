@@ -19,19 +19,20 @@ namespace Public.Frontend.Net.Tunnel
             //var result = context.Request.Query["host"][0];
             var result = context.Request.RouteValues["agent"].ToString();
             // var result = context.Request.Host.ToString();
-            return result;
+            //return result;
+            return "Agent1";
         }
 
         //gets the connection key when calls to proxy are made 
         public static string? GetConnectionKey(this SocketsHttpConnectionContext context)
         {
             // var hostHeader = "X-Forwarded-Host";
-            var hostHeader = "host-param";
-            string? result = null;
-            if (context.InitialRequestMessage.Headers.TryGetValues(hostHeader, out var tryValues))
-                result = tryValues.SingleOrDefault() ?? string.Empty;
-            return result;
-
+            //var hostHeader = "host-param";
+            //string? result = null;
+            //if (context.InitialRequestMessage.Headers.TryGetValues(hostHeader, out var tryValues))
+            //    result = tryValues.SingleOrDefault() ?? string.Empty;
+            //return result;
+            return "Agent1";
         }
     }
 }

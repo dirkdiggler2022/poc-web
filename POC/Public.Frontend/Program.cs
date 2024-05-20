@@ -16,27 +16,27 @@ namespace Public.Frontend
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddReverseProxy()
-                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
-                .AddTransforms(builderContext =>
-                {
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+                //.AddTransforms(builderContext =>
+                //{
 
-                    builderContext.AddRequestTransform(async (transformContext) =>
-                    {
-                        var queryContext = new QueryTransformContext(transformContext.HttpContext.Request);
+                //    builderContext.AddRequestTransform(async (transformContext) =>
+                //    {
+                //        var queryContext = new QueryTransformContext(transformContext.HttpContext.Request);
  
 
-                        if (transformContext.HttpContext.Request.RouteValues.ContainsKey("agent"))
-                        {
-                            var headerValue = transformContext.HttpContext.Request.RouteValues["agent"].ToString();
-                            transformContext.ProxyRequest.Headers.Add("host-param", headerValue);
+                //        if (transformContext.HttpContext.Request.RouteValues.ContainsKey("agent"))
+                //        {
+                //            var headerValue = transformContext.HttpContext.Request.RouteValues["agent"].ToString();
+                //            transformContext.ProxyRequest.Headers.Add("host-param", headerValue);
 
-                            var path = transformContext.HttpContext.Request.Path.ToString().Replace($"/{headerValue}", "").Replace("/Proxy1","").Replace("/Proxy2","");
-                            transformContext.ProxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", path, queryContext.QueryString);
-                            //  proxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", httpContext.Request.Path, queryContext.QueryString);
-                        }
+                //            var path = transformContext.HttpContext.Request.Path.ToString().Replace($"/{headerValue}", "").Replace("/Proxy1","").Replace("/Proxy2","");
+                //            transformContext.ProxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", path, queryContext.QueryString);
+                //            //  proxyRequest.RequestUri = RequestUtilities.MakeDestinationAddress("http://backend1.app", httpContext.Request.Path, queryContext.QueryString);
+                //        }
                         
-                    });
-                });
+                //    });
+                //});
 
 
             builder.Services.AddTunnelServices();
