@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Private.Agent
 {
     public class Program
@@ -22,7 +24,16 @@ namespace Private.Agent
 
             app.MapReverseProxy();
 
+
+            app.MapGet("/api/health", async (HttpContext context) =>
+            {
+                return HttpStatusCode.Accepted;
+            });
+
             app.Run();
+
+
+           
         }
     }
 }

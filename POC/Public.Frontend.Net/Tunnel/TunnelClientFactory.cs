@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading.Channels;
 using Public.Frontend.Net.Utilities;
@@ -9,12 +10,21 @@ namespace Public.Frontend.Net.Tunnel;
 /// <summary>
 /// The factory that YARP will use the create outbound connections by host name.
 /// </summary>
-internal class TunnelClientFactory : ForwarderHttpClientFactory
+public class TunnelClientFactory : ForwarderHttpClientFactory
 {
     // TODO: These values should be populated by configuration so there's no need to remove
     // channels.
     private readonly ConcurrentDictionary<string, (Channel<int>, Channel<Stream>)> _clusterConnections = new();
 
+    public bool ContainsConnection(string connectionKey)
+    {
+        var connection = _clusterConnections.SingleOrDefault(n => n.Key.Equals(connectionKey));
+        if (connection.Key == null)
+            return false;
+        //if (connection.Value.Item2 is ICloseable c && c.IsClosed)
+        return true;
+
+    }
     public (Channel<int>, Channel<Stream>) GetConnectionChannel(string key)
     {
         return _clusterConnections.GetOrAdd(key, _ => (Channel.CreateUnbounded<int>(), Channel.CreateUnbounded<Stream>()));
