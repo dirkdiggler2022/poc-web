@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading.Channels;
+using Public.Frontend.Net.Utilities;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace Public.Frontend.Net.Tunnel;
@@ -43,8 +44,8 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
         handler.ConnectCallback = async (connectionContext, cancellationToken) =>
         {
             var connectionKey = connectionContext.GetConnectionKey();
-            //var host = connectionContext.InitialRequestMessage.Headers.Host;
-            if (_clusterConnections.TryGetValue(connectionKey, out var pair))
+
+            if (!string.IsNullOrEmpty(connectionKey) && _clusterConnections.TryGetValue(connectionKey, out var pair))
             {
                 var (requests, responses) = pair;
 
