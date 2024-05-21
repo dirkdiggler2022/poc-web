@@ -15,6 +15,13 @@ namespace Public.Frontend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Logging.AddConsole();
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                //need for ngrok, not sure if needed in platform
+                options.AllowAlternateSchemes = true;
+            });
             //loads our routes, probably will be cosmo or azure configs
             var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
             builder.Services.AddReverseProxy()
@@ -26,6 +33,9 @@ namespace Public.Frontend
             builder.Services.AddTunnelServices();
 
             var app = builder.Build();
+
+            ApplicationLogging.LoggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+
 
             app.MapReverseProxy();
 

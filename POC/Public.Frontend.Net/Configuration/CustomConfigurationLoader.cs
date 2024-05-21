@@ -69,7 +69,8 @@ namespace Public.Frontend.Net.Configuration
         {
             var result = new DestinationConfig
             {
-                Address = $"http://{connectionKey}.proxy.app"
+                // Address = $"http://{connectionKey}.proxy.{Guid.NewGuid()}.app"
+                Address = $"http://backend1.app"
             };
             return result;
 

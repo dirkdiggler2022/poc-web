@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Public.Frontend.Net.Tunnel;
 using Public.Frontend.Net.Utilities;
 using System.Net.WebSockets;
@@ -30,6 +31,8 @@ public static class TunnelExensions
 
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
+
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
