@@ -57,14 +57,16 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
-        var conventionBuilder = routes.MapGet(path, static async (HttpContext context, string host, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 return Results.BadRequest();
             }
 
-            var (requests, responses) = tunnelFactory.GetConnectionChannel(host);
+
+            var connectionKey = context.GetConnectionKey();
+            var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
