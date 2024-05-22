@@ -10,7 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Yarp.ReverseProxy" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReverseProxy\Yarp.ReverseProxy.csproj" />
   </ItemGroup>
 
 </Project>
