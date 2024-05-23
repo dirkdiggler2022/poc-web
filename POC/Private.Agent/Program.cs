@@ -18,7 +18,10 @@ namespace Private.Agent
                 url = test.ToString();
 
 
-            builder.WebHost.UseTunnelTransport(url);
+            builder.WebHost.UseTunnelTransport(url, options =>
+            {
+                options.Transport = TransportType.WebSockets;
+            });
 
             var app = builder.Build();
 

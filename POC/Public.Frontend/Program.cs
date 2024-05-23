@@ -42,7 +42,7 @@ namespace Public.Frontend
             app.MapReverseProxy();
 
             // Uncomment to support websocket connections
-            //app.MapWebSocketTunnel("/connect-ws");
+            app.MapWebSocketTunnel("/connect-ws/{connectionKey}");
 
             // Auth can be added to this endpoint and we can restrict it to certain points
             // to avoid exteranl traffic hitting it
