@@ -25,7 +25,8 @@ namespace Public.Frontend
             //loads our routes, probably will be cosmo or azure configs
             var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
             builder.Services.AddReverseProxy()
-                .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
+                //.LoadFromMemory(routeLoader.Routes, routeLoader.Clusters)
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
