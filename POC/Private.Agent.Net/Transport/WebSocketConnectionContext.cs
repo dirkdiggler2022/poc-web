@@ -59,6 +59,7 @@ internal class WebSocketConnectionContext : HttpConnection
         var connection = new WebSocketConnectionContext(options);
         await connection.StartAsync(TransferFormat.Binary, cancellationToken);
         connection._underlyingWebSocket = underlyingWebSocket;
+        
         return connection;
     }
 }

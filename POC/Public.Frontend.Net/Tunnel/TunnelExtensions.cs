@@ -50,7 +50,7 @@ public static class TunnelExensions
 
                 stream.Reset();
             }
-
+            
             return EmptyResult.Instance;
         });
     }
@@ -68,6 +68,8 @@ public static class TunnelExensions
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
+
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} using Websockets connected"));
             await requests.Reader.ReadAsync(context.RequestAborted);
 
             var ws = await context.WebSockets.AcceptWebSocketAsync();

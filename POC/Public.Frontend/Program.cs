@@ -27,7 +27,7 @@ namespace Public.Frontend
             builder.Services.AddReverseProxy()
                 .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
 
-                //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+           // builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 
             builder.Services.AddTunnelServices();
@@ -44,7 +44,7 @@ namespace Public.Frontend
 
             // Auth can be added to this endpoint and we can restrict it to certain points
             // to avoid exteranl traffic hitting it
-            app.MapHttp2Tunnel("/connect-h2/{connectionKey}");
+           // app.MapHttp2Tunnel("/connect-h2/{connectionKey}");
 
             app.Run();
         }
