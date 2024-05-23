@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  public.frontend:
+    image: ${DOCKER_REGISTRY-}publicfrontend
+    ports:
+    - "5212:8080"   # Maps port 8080 in the container to port 8080 on the host
+    - "7243:8081"  # Maps port 8081 in the container to port 8081 on the host
+    build:
+      context: .
+      dockerfile: Public.Frontend/Dockerfile

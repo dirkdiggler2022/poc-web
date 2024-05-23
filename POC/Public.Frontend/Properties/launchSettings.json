@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://host.docker.internal:7243;http://host.docker.internal:5212"
+      "applicationUrl": "https://localhost:7243;http://localhost:5212"
     },
     "IIS Express": {
       "commandName": "IISExpress",
