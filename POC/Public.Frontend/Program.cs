@@ -26,10 +26,11 @@ namespace Public.Frontend
             });
             //loads our routes, probably will be cosmo or azure configs
             var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
-            //builder.Services.AddReverseProxy()
-            //    .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
 
-            builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+            builder.Services.AddReverseProxy()
+                //.LoadFromMemory(routeLoader.Routes, routeLoader.Clusters)
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 
             builder.Services.AddTunnelServices();
@@ -48,23 +49,7 @@ namespace Public.Frontend
             // to avoid exteranl traffic hitting it
             app.MapHttp2Tunnel("/connect-h2/{connectionKey}");
 
-
-            app.MapGet("/api/health/{connectionKey}", async (HttpContext context, IProxyConfigProvider proxyConfigurationProvider, TunnelClientFactory tunnelClientFactory) =>
-            {
-                var key = "Agent1";
-               // var key = context.Request.RouteValues["connectionKey"].ToString();
-                //var connectionKeyCluster = proxyConfigurationProvider.GetConfig().Routes.SingleOrDefault(n => n.RouteId == $"{key}-route");
-                //if()
-                HttpClient client = new HttpClient();
-                var message = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7243");
-                message.Headers.Add("x-connection-key", key);
-                var response = await client.SendAsync(message);
-                var actualStuff = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode)
-                    return HttpStatusCode.ExpectationFailed;
-
-                return HttpStatusCode.Accepted;
-            });
+            app.MapDestinationHealthCheck("/api/health/{connectionKey}");
 
             app.Run();
         }
