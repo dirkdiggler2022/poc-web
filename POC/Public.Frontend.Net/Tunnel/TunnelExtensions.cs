@@ -121,11 +121,15 @@ public static class TunnelExensions
             var message = new HttpRequestMessage(HttpMethod.Get, $"{context.Request.Scheme}://{context.Request.Host}");
             message.Headers.Add("x-connection-key", key);
             var response = await client.SendAsync(message);
-            //var actualStuff = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
-                return HttpStatusCode.ExpectationFailed;
+            //if we can hit it, tunnel is not broken, I think, if not, not sure at this point what to do, 
+            //but this will at least change the agents cluster status to unhealthy so agent can handle.
+            //I think monitor may be process monitor that reads results of status, stored somewhere
+            //if (!response.IsSuccessStatusCode)
+            //    return response.StatusCode;
 
-            return HttpStatusCode.Accepted;
+            //return HttpStatusCode.Accepted;
+            return HttpStatusCode.BadGateway;
+
         });
     }
 

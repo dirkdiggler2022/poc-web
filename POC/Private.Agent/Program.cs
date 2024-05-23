@@ -26,7 +26,8 @@ namespace Private.Agent
             var app = builder.Build();
 
             app.MapReverseProxy();
-            app.MapGet("/api/health", async (HttpContext context) =>
+
+            app.MapGet("/api/proxy/health", async (HttpContext context) =>
             {
                 return HttpStatusCode.Accepted;
             });
