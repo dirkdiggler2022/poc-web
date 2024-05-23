@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Public.Frontend.Net.Tunnel;
 using Public.Frontend.Net.Utilities;
+using System.Net;
 using System.Net.WebSockets;
 using Yarp.ReverseProxy.Forwarder;
 
@@ -102,6 +103,34 @@ public static class TunnelExensions
         });
 
         return conventionBuilder;
+    }
+
+    //hits client target proxied site to see if our connection is still good
+
+    public static IEndpointConventionBuilder MapDestinationHealthCheck(this IEndpointRouteBuilder routes,
+        string path)
+    {
+        return routes.MapGet(path, async (HttpContext context) =>
+        {
+            if(!context.Request.RouteValues.TryGetValue("connectionKey", out var routeValue))
+                return HttpStatusCode.ExpectationFailed;
+
+            var key = routeValue?.ToString();
+
+            using HttpClient client = new HttpClient();
+            var message = new HttpRequestMessage(HttpMethod.Get, $"{context.Request.Scheme}://{context.Request.Host}");
+            message.Headers.Add("x-connection-key", key);
+            var response = await client.SendAsync(message);
+            //if we can hit it, tunnel is not broken, I think, if not, not sure at this point what to do, 
+            //but this will at least change the agents cluster status to unhealthy so agent can handle.
+            //I think monitor may be process monitor that reads results of status, stored somewhere
+            //if (!response.IsSuccessStatusCode)
+            //    return response.StatusCode;
+
+            //return HttpStatusCode.Accepted;
+            return HttpStatusCode.BadGateway;
+
+        });
     }
 
     // This is for .NET 6, .NET 7 has Results.Empty
