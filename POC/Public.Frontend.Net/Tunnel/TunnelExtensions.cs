@@ -32,7 +32,7 @@ public static class TunnelExensions
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
-            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected"));
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via http2"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
@@ -67,6 +67,8 @@ public static class TunnelExensions
 
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
+
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
