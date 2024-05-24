@@ -29,7 +29,7 @@ namespace Private.Agent
 
             app.MapGet("/api/proxy/health", async (HttpContext context) =>
             {
-                return HttpStatusCode.Accepted;
+                return "Healthy";
             });
             app.Run();
         }

@@ -51,6 +51,12 @@ namespace Public.Frontend
 
             app.MapDestinationHealthCheck("/api/health/{connectionKey}");
 
+            app.MapGet("/health", async (HttpContext context) =>
+            {
+                
+                return "Healthy";
+            });
+
             app.Run();
         }
 

@@ -1,20 +1,21 @@
 version: '3.4'
 
 services:
-  public.frontend:
-    image: ${DOCKER_REGISTRY-}publicfrontend
-    ports:
-    - "5212:8080"   # Maps port 8080 in the container to port 8080 on the host
-    - "7243:8081"  # Maps port 8081 in the container to port 8081 on the host
-    build:
-      context: .
-      dockerfile: Public.Frontend/Dockerfile
   envoy:
     image: envoyproxy/envoy:v1.30-latest
     ports:
-      - "10000:10000"
+      - "8000:8000"
+      - "8443:8443"
       - "9901:9901"
     volumes:
       - ./deployment/envoy.yaml:/etc/envoy/envoy.yaml
+    depends_on:
+         - public.frontend
+
+  public.frontend:
+    image: ${DOCKER_REGISTRY-}publicfrontend
+    build:
+      context: .
+      dockerfile: Public.Frontend/Dockerfile
  
 
