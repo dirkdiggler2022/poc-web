@@ -9,3 +9,12 @@ services:
     build:
       context: .
       dockerfile: Public.Frontend/Dockerfile
+  envoy:
+    image: envoyproxy/envoy:v1.30-latest
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    volumes:
+      - ./deployment/envoy.yaml:/etc/envoy/envoy.yaml
+ 
+
