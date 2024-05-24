@@ -33,7 +33,7 @@ static_resources:
               - match:
                   prefix: "/"
                 route:
-                  host_rewrite_literal: d127-70-126-4-249.ngrok-free.app
+                  # host_rewrite_literal: host.docker.internal
                   cluster: service_envoyproxy_io
           http_filters:
           - name: envoy.filters.http.router
@@ -53,5 +53,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: d127-70-126-4-249.ngrok-free.app
-                port_value: 80
+                address: host.docker.internal
+                port_value: 443
