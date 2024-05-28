@@ -1,4 +1,8 @@
 using System.Net;
+using System.Net.Sockets;
+using System.Security.Authentication;
+using Microsoft.AspNetCore.Connections.Features;
+using Private.Agent.Net.Monitoring;
 
 namespace Private.Agent
 {
@@ -11,6 +15,9 @@ namespace Private.Agent
             builder.Services.AddReverseProxy()
                 .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+            builder.Services.AddSingleton<ConnectionMonitor>();
+
+            
             var url = builder.Configuration["Tunnel:Url"]!;
 
             //overload command line arg for url
@@ -25,6 +32,22 @@ namespace Private.Agent
 
             var app = builder.Build();
 
+            app.Use(async (context, next) =>
+            {
+                var feature = context.Features.Get<IConnectionSocketFeature>();
+                if (feature != null)
+                {
+                    var dirk = feature.Socket.Poll(10000, SelectMode.SelectError);
+                }
+                //if (tlsFeature != null && tlsFeature.CipherAlgorithm == CipherAlgorithmType.Null)
+                //{
+                //    throw new NotSupportedException(
+                //        $"Prohibited cipher: {tlsFeature.CipherAlgorithm}");
+                //}
+
+                await next();
+            });
+
             app.MapReverseProxy();
 
 
@@ -32,6 +55,9 @@ namespace Private.Agent
             {
                 return HttpStatusCode.Accepted;
             });
+
+            var cm = app.Services.GetRequiredService<ConnectionMonitor>();
+            cm.Start();
 
             app.Run();
 

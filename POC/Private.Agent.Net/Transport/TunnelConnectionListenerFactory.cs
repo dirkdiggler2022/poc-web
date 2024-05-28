@@ -5,14 +5,23 @@ using Microsoft.Extensions.Options;
 public class TunnelConnectionListenerFactory : IConnectionListenerFactory
 {
     private readonly TunnelOptions _options;
+    private TunnelConnectionListener _tunnelConnectionListener;
 
-    public TunnelConnectionListenerFactory(IOptions<TunnelOptions> options)
+    
+    public TunnelConnectionListener TunnelConnectionListener
+    {
+        get { return _tunnelConnectionListener; }
+    }
+
+    public TunnelConnectionListenerFactory(IOptions<TunnelOptions> 
+    options)
     {
         _options = options.Value;
     }
 
     public ValueTask<IConnectionListener> BindAsync(EndPoint endpoint, CancellationToken cancellationToken = default)
     {
-        return new(new TunnelConnectionListener(_options, endpoint));
+        _tunnelConnectionListener = new TunnelConnectionListener(_options, endpoint);
+        return new(_tunnelConnectionListener);
     }
 }

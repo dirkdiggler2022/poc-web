@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Connections;
 /// <summary>
 /// This has the core logic that creates and maintains connections to the proxy.
 /// </summary>
-internal class TunnelConnectionListener : IConnectionListener
+public class TunnelConnectionListener : IConnectionListener
 {
     private readonly SemaphoreSlim _connectionLock;
     private readonly ConcurrentDictionary<ConnectionContext, ConnectionContext> _connections = new();
@@ -18,6 +18,10 @@ internal class TunnelConnectionListener : IConnectionListener
         PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan
     });
 
+    public ConcurrentDictionary<ConnectionContext, ConnectionContext> Connections
+    {
+        get { return _connections; }
+    }
     public TunnelConnectionListener(TunnelOptions options, EndPoint endpoint)
     {
         _options = options;
@@ -26,6 +30,7 @@ internal class TunnelConnectionListener : IConnectionListener
 
         if (endpoint is not UriEndPoint)
         {
+            
             throw new NotSupportedException($"UriEndPoint is required for {options.Transport} transport");
         }
     }
@@ -55,6 +60,7 @@ internal class TunnelConnectionListener : IConnectionListener
                         TransportType.HTTP2 => await HttpClientConnectionContext.ConnectAsync(_httpMessageInvoker, Uri, cancellationToken),
                         _ => throw new NotSupportedException(),
                     });
+
 
                     // Track this connection lifetime
                     _connections.TryAdd(connection, connection);
