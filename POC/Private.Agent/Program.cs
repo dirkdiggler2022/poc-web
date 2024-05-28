@@ -18,7 +18,7 @@ namespace Private.Agent
 
             builder.WebHost.UseTunnelTransport(url, options =>
             {
-                options.Transport = url.Contains("connect-h2") ? TransportType.HTTP2 : TransportType.WebSockets;
+                options.Transport = url.Contains("connect-ws") ? TransportType.HTTP2 : TransportType.WebSockets;
             });
 
             var app = builder.Build();
