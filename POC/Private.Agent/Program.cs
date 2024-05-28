@@ -13,14 +13,14 @@ namespace Private.Agent
 
             var url = builder.Configuration["Tunnel:Url"]!;
 
-            //overload listen 
+            //overload command line arg for url
             if (args.Length > 0 && Uri.TryCreate(args[0].ToString(), UriKind.Absolute, out var test))
                 url = test.ToString();
 
 
             builder.WebHost.UseTunnelTransport(url, options =>
             {
-                options.Transport = TransportType.WebSockets;
+                options.Transport = url.Contains("connect-h2") ? TransportType.HTTP2 : TransportType.WebSockets;
             });
 
             var app = builder.Build();
