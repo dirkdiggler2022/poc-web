@@ -43,7 +43,7 @@ namespace Public.Tests
 
         string ConnectUrl
         {
-            get { return $"{HOST_BASE}/connect-h2"; }
+            get { return $"{HOST_BASE}/connect-ws"; }
         }
     }
 }
