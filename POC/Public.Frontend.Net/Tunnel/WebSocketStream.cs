@@ -121,6 +121,8 @@ internal class WebSocketStream : Stream, IValueTaskSource<object?>, ICloseable
 
     public void Reset()
     {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", timeout.Token).GetAwaiter().GetResult();
         _tcs.Reset();
     }
 
