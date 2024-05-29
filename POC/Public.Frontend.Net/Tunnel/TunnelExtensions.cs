@@ -41,15 +41,16 @@ public static class TunnelExensions
             using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
 
             // Keep reusing this connection while, it's still open on the backend
-            while (!context.RequestAborted.IsCancellationRequested)
-            {
+            // JC - Can't safely re-use them
+            // while (!context.RequestAborted.IsCancellationRequested)
+            // {
                 // Make this connection available for requests
                 await responses.Writer.WriteAsync(stream, context.RequestAborted);
 
                 await stream.StreamCompleteTask;
 
                 stream.Reset();
-            }
+            // }
 
             return EmptyResult.Instance;
         });
@@ -80,15 +81,16 @@ public static class TunnelExensions
             using var reg = lifetime.ApplicationStopping.Register(() => stream.Abort());
 
             // Keep reusing this connection while, it's still open on the backend
-            while (ws.State == WebSocketState.Open)
-            {
+            // JC - Don't reuse streams until able to safely reuse them 
+            // while (ws.State == WebSocketState.Open)
+            // {
                 // Make this connection available for requests
                 await responses.Writer.WriteAsync(stream, context.RequestAborted);
 
                 await stream.StreamCompleteTask;
 
                 stream.Reset();
-            }
+            // }
 
             return EmptyResult.Instance;
         });
