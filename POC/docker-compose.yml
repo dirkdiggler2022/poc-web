@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  public.frontend:
+    image: ${DOCKER_REGISTRY-}publicfrontend
+    build:
+      context: .
+      dockerfile: Public.Frontend/Dockerfile
+
+    deploy:
+     replicas: 3
