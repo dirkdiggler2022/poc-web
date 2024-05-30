@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 /POC/Private.Web/wwwroot/css/25mb.zip
+obj
+obj
+obj
