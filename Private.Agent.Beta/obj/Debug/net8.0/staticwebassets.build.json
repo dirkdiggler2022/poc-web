@@ -1,0 +1,23 @@
+{
+  "Version": 1,
+  "Hash": "8NwOOfWTxMfIy9Hqcl/H1KpAft5wFNttPbqSgAQnJY8=",
+  "Source": "Private.Agent.Beta",
+  "BasePath": "_content/Private.Agent.Beta",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\Dev\\LocalRepo\\poc-web\\POC\\Private.Agent\\Private.Agent.csproj",
+      "Version": 2,
+      "Source": "Private.Agent",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
