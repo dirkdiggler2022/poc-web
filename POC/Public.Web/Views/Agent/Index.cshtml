@@ -1,0 +1,32 @@
+﻿@model Public.Web.Models.AgentInfoModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+    @using (Html.BeginForm())
+    {
+        <div>
+            @Html.LabelFor(m => m.Agent, "Enter Text:")
+            @Html.TextBoxFor(m => m.Agent)
+            <input type="submit" value="Submit" />
+        </div>
+    }
+    
+    <div>
+        @if (!string.IsNullOrEmpty(Model.Response))
+        {
+            <label>Replied: @Model.Response</label>
+        }
+    </div>
+</div>
+</body>
+</html>

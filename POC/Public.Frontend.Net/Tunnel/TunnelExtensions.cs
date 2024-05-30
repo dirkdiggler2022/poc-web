@@ -106,6 +106,27 @@ public static class TunnelExensions
         return conventionBuilder;
     }
 
+    public static IEndpointConventionBuilder MapAgentInfoEndpoint(this IEndpointRouteBuilder routes, string path)
+    {
+        return routes.Map(path, static async (HttpContext context, TunnelClientFactory tunnelClientFactory) =>
+        {
+
+            var connectionKey = context.Request.RouteValues["agent"].ToString();
+            return connectionKey;
+
+        });
+    }
+
+    public static IEndpointConventionBuilder MapAgentsInfoEndpoint(this IEndpointRouteBuilder routes, string path)
+    {
+        return routes.Map(path, static async (HttpContext context, TunnelClientFactory tunnelClientFactory) =>
+        {
+            return string.Join(",",tunnelClientFactory.GetConnectectClients());
+            //var connectionKey = context.Request.RouteValues["agent"].ToString();
+            //return connectionKey;
+
+        });
+    }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult
     {

@@ -72,4 +72,9 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
             return Stream.Null;
         };
     }
+
+    public List<string> GetConnectectClients()
+    {
+        return _clusterConnections.Select((n => n.Key)).ToList();
+    }
 }

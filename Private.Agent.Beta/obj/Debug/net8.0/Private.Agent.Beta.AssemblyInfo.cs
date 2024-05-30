@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Private.Agent.Beta")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1781f1f4b88fe9d4c365dfdf780c2c2e70c5fc31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e1272e5eb1eeddd7df0332da885a50426d1bc90")]
 [assembly: System.Reflection.AssemblyProductAttribute("Private.Agent.Beta")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Private.Agent.Beta")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

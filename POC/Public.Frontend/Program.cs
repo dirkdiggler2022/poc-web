@@ -47,6 +47,16 @@ namespace Public.Frontend
             // to avoid exteranl traffic hitting it
             app.MapHttp2Tunnel("/connect-h2/{connectionKey}");
 
+
+            app.MapAgentInfoEndpoint("/Agent/{agent}");
+
+            app.MapAgentsInfoEndpoint("/agents");
+
+            app.Map("/health", (HttpContext context) =>
+            {
+                var hostInfo = $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
+                return $"{hostInfo} is Healthy";
+            });
             app.Run();
         }
 

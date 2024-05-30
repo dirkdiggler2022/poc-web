@@ -6,6 +6,5 @@ services:
     build:
       context: .
       dockerfile: Public.Frontend/Dockerfile
-
     deploy:
-     replicas: 3
+      replicas: 6

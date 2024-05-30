@@ -12,4 +12,16 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Agent\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Agent\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
 </Project>
