@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\Private.Agent.Alpha.props" />
-</Project>
