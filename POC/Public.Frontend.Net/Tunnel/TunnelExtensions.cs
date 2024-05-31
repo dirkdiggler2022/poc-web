@@ -10,6 +10,7 @@ using Public.Frontend.Net.Tunnel;
 using Public.Frontend.Net.Utilities;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Public.Frontend.Net;
 using Public.Frontend.Net.Configuration;
 using Yarp.ReverseProxy.Configuration;
@@ -141,10 +142,17 @@ public static class TunnelExensions
     {
         var (routeConfig,clusterConfig) = GetRouteConfig(connectionKey);
         var routes = proxyConfigProvider.GetConfig().Routes.ToList();
+        if (routes.Any(n => n.RouteId.Equals($"{connectionKey}-route")))
+            return;
+
         var clusters = proxyConfigProvider.GetConfig().Clusters.ToList();
         routes.Add(routeConfig);
         clusters.Add(clusterConfig);
         proxyConfigProvider.Update(routes,clusters);
+
+        //var jsonString = JsonSerializer.Serialize(proxyConfigProvider.GetConfig());
+        //File.WriteAllText("c:/Temp/routes.txt",jsonString);
+
     }
     static (RouteConfig RouteConfig, ClusterConfig ClusterConfig) GetRouteConfig(string connectionKey)
     {

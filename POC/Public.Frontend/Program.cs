@@ -29,8 +29,8 @@ namespace Public.Frontend
             builder.Services.AddSingleton<IProxyConfig>(configProvider);
             builder.Services.AddSingleton<CustomConfigurationLoader>(routeLoader);
             builder.Services.AddReverseProxy()
-                .LoadFromMemory(configProvider.Routes, configProvider.Clusters);
-                //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+                .LoadFromMemory(configProvider.Routes, configProvider.Clusters)
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
