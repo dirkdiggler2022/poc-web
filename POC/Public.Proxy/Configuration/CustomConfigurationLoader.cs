@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using Yarp.ReverseProxy.Configuration;
 
-namespace Public.Frontend.Net.Configuration
+namespace Public.Proxy.Configuration
 {
     //this will be the thing that loads from DB or file
     //creates clusters and routes
@@ -78,8 +72,8 @@ namespace Public.Frontend.Net.Configuration
 
         public CustomProxyConfigProvider GetProvider()
         {
-           // InitFakeConnections();
-            //LoadRoutesAndClusters();
+            InitFakeConnections();
+            LoadRoutesAndClusters();
             var result = new CustomProxyConfigProvider(_routeConfigs, _clusterConfigs);
             return result;
         } 

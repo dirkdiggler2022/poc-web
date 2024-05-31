@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Collections.Concurrent;
+using System.Net;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +9,10 @@ using Microsoft.Extensions.Logging;
 using Public.Frontend.Net.Tunnel;
 using Public.Frontend.Net.Utilities;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
+using Public.Frontend.Net;
+using Public.Frontend.Net.Configuration;
+using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Forwarder;
 
 public static class TunnelExensions
@@ -58,7 +64,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
-        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, InMemoryConfigProvider proxyConfigProvider, IHostApplicationLifetime lifetime) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -68,7 +74,7 @@ public static class TunnelExensions
 
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
-
+            CreateDynamicRoute(connectionKey,proxyConfigProvider);
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
@@ -121,11 +127,64 @@ public static class TunnelExensions
     {
         return routes.Map(path, static async (HttpContext context, TunnelClientFactory tunnelClientFactory) =>
         {
-            return string.Join(",",tunnelClientFactory.GetConnectectClients());
+            var hostInfo = $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
+            var agents = string.Join(",",tunnelClientFactory.GetConnectectClients());
+
+            return $"{hostInfo} - {agents}";
             //var connectionKey = context.Request.RouteValues["agent"].ToString();
             //return connectionKey;
 
         });
+    }
+
+    static void CreateDynamicRoute(string connectionKey, InMemoryConfigProvider proxyConfigProvider)
+    {
+        var (routeConfig,clusterConfig) = GetRouteConfig(connectionKey);
+        var routes = proxyConfigProvider.GetConfig().Routes.ToList();
+        var clusters = proxyConfigProvider.GetConfig().Clusters.ToList();
+        routes.Add(routeConfig);
+        clusters.Add(clusterConfig);
+        proxyConfigProvider.Update(routes,clusters);
+    }
+    static (RouteConfig RouteConfig, ClusterConfig ClusterConfig) GetRouteConfig(string connectionKey)
+    {
+        var cluster = new ClusterConfig
+        {
+            ClusterId = $"{connectionKey}-cluster",
+            Destinations = new ConcurrentDictionary<string, DestinationConfig>(new List<KeyValuePair<string, DestinationConfig>> { new("default", GetDestinationConfig(connectionKey)) })
+        };
+
+        var route = new RouteConfig
+        {
+            RouteId = $"{connectionKey}-route",
+            ClusterId = cluster.ClusterId,
+            Match = new RouteMatch
+            {
+                Path = "{**catch-all}",
+                Headers = new List<RouteHeader>
+                {
+                    new()
+                    {
+                        Name = GlobalConstants.CONNECTION_KEY_HEADER_NAME,
+                        Values = new List<string>{connectionKey}
+                    }
+                }
+            },
+
+        };
+
+        (RouteConfig RouteConfig, ClusterConfig ClusterConfig) result = (route, cluster);
+        return result;
+    }
+    static DestinationConfig GetDestinationConfig(string connectionKey)
+    {
+        var result = new DestinationConfig
+        {
+            // Address = $"http://{connectionKey}.proxy.{Guid.NewGuid()}.app"
+            Address = $"http://backend1.app"
+        };
+        return result;
+
     }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult

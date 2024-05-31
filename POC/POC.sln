@@ -37,11 +37,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Beta", "Beta", "{187801B0-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Charlie", "Charlie", "{ABE00854-003B-4918-A97D-D71B92817DC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Alpha", "..\Private.Agent.Alpha\Private.Agent.Alpha.csproj", "{62B62692-E6FD-48BA-9032-F76922E1676C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent.Alpha", "..\Private.Agent.Alpha\Private.Agent.Alpha.csproj", "{62B62692-E6FD-48BA-9032-F76922E1676C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Beta", "..\Private.Agent.Beta\Private.Agent.Beta.csproj", "{13995913-8C21-40F9-8EF7-976680F509D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent.Beta", "..\Private.Agent.Beta\Private.Agent.Beta.csproj", "{13995913-8C21-40F9-8EF7-976680F509D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Agent.Charlie", "..\Private.Agent.Charlie\Private.Agent.Charlie.csproj", "{921001F8-ACF5-4C12-8606-5329D12AC2BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Private.Agent.Charlie", "..\Private.Agent.Charlie\Private.Agent.Charlie.csproj", "{921001F8-ACF5-4C12-8606-5329D12AC2BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1543D4C-9395-451E-B333-9914B50B84CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

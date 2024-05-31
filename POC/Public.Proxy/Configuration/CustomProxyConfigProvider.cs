@@ -1,6 +1,6 @@
 ﻿using Yarp.ReverseProxy.Configuration;
 
-namespace Public.Frontend.Net.Configuration
+namespace Public.Proxy.Configuration
 {
 
     //this will be something that is integrated with cosmo db or 
@@ -55,6 +55,5 @@ namespace Public.Frontend.Net.Configuration
             oldConfig.SignalChange();
         }
 
-        
     }
 }
