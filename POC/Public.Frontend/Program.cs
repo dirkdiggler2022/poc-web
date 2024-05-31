@@ -16,8 +16,10 @@ namespace Public.Frontend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("proxy-config/proxy.config.json")
+;
             builder.Logging.AddConsole();
-
+            
             builder.WebHost.ConfigureKestrel(options =>
             {
                 //need for ngrok, not sure if needed in platform

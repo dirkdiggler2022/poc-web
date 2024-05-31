@@ -1,10 +1,33 @@
 version: '3.4'
 
 services:
-  public.frontend:
+  public-frontend:
     image: ${DOCKER_REGISTRY-}publicfrontend
     build:
       context: .
       dockerfile: Public.Frontend/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - proxy_config_volume:/app/
     deploy:
-      replicas: 6
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - mynetwork
+volumes:
+  proxy_config_volume:
+networks:
+  mynetwork:
+    driver: overlay

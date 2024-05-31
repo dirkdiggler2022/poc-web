@@ -75,7 +75,7 @@ public static class TunnelExensions
 
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
-            CreateDynamicRoute(connectionKey,proxyConfigProvider);
+            //CreateDynamicRoute(connectionKey,proxyConfigProvider);
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
@@ -177,8 +177,9 @@ public static class TunnelExensions
                         Values = new List<string>{connectionKey}
                     }
                 }
+                
             },
-
+            Transforms = GetTransforms()
         };
 
         (RouteConfig RouteConfig, ClusterConfig ClusterConfig) result = (route, cluster);
@@ -193,6 +194,22 @@ public static class TunnelExensions
         };
         return result;
 
+    }
+
+    static IReadOnlyList<IReadOnlyDictionary<string, string>> GetTransforms()
+    {
+        var result = new List<Dictionary<string, string>>();
+        result.Add(new Dictionary<string,string>{{ "RequestHeadersCopy","true"} });
+        result.Add(new Dictionary<string, string> { { "RequestHeaderOriginalHost", "true" } });
+
+        var custom = new Dictionary<string, string>
+        {
+            { "ResponseHeader", "MyHeader" },
+            { "Append", "MyValue" },
+            { "When", "Always" }
+        };
+        result.Add(custom);
+        return result;
     }
     // This is for .NET 6, .NET 7 has Results.Empty
     internal sealed class EmptyResult : IResult
