@@ -15,6 +15,7 @@ using Public.Frontend.Net;
 using Public.Frontend.Net.Configuration;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.ServiceDiscovery;
 
 public static class TunnelExensions
 {
@@ -65,7 +66,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
-        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory, InMemoryConfigProvider proxyConfigProvider, IHostApplicationLifetime lifetime) =>
+        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory,IProxyConfigProvider proxyConfigProvider, IHostApplicationLifetime lifetime) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -74,9 +75,18 @@ public static class TunnelExensions
 
 
             var connectionKey = context.GetConnectionKey();
+            //var proxyConfig = proxyConfigProvider.GetConfig();
+            //var cluster = proxyConfig.Clusters.SingleOrDefault(n => n.ClusterId.Equals($"{connectionKey}-cluster"));
+            //if (cluster != null)
+            //{
+            //    cluster.Destinations
+            //}
+
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
-            //CreateDynamicRoute(connectionKey,proxyConfigProvider);
+            //CreateDynamicRoute(connectionKey,proxyConfigProvider,context);
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
+
+            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"Connected at {context.Connection.LocalIpAddress} {context.Connection.LocalPort}"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
@@ -138,28 +148,54 @@ public static class TunnelExensions
         });
     }
 
-    static void CreateDynamicRoute(string connectionKey, InMemoryConfigProvider proxyConfigProvider)
+    public static IEndpointConventionBuilder MapRouteInfo(this IEndpointRouteBuilder routes, string path)
     {
-        var (routeConfig,clusterConfig) = GetRouteConfig(connectionKey);
-        var routes = proxyConfigProvider.GetConfig().Routes.ToList();
-        if (routes.Any(n => n.RouteId.Equals($"{connectionKey}-route")))
+        return routes.Map(path, (HttpContext context, IProxyConfigProvider proxyConfigProvider) =>
+        {
+
+            var proxyConfig = proxyConfigProvider.GetConfig();
+            var response = JsonSerializer.Serialize(proxyConfig);
+            return response;
+
+        });
+    }
+
+
+    static void CreateDynamicRoute(string connectionKey, InMemoryConfigProvider proxyConfigProvider,HttpContext context)
+    {
+
+        var fileInfo =
+            new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "proxy-config", "proxy.config.json"));
+        if (!fileInfo.Exists)
             return;
 
-        var clusters = proxyConfigProvider.GetConfig().Clusters.ToList();
-        routes.Add(routeConfig);
-        clusters.Add(clusterConfig);
-        proxyConfigProvider.Update(routes,clusters);
+        var contents = File.ReadAllText(fileInfo.FullName);
+        var newContents = contents.Replace("https://replaceme.donotresolve", $"https://{context.Connection.LocalIpAddress}:{context.Connection.LocalPort}");
+        File.WriteAllText(fileInfo.FullName, newContents);
+
+
+
+
+        //var (routeConfig,clusterConfig) = GetRouteConfig(connectionKey,context);
+        //var routes = proxyConfigProvider.GetConfig().Routes.ToList();
+        //if (routes.Any(n => n.RouteId.Equals($"{connectionKey}-route")))
+        //    return;
+
+        //var clusters = proxyConfigProvider.GetConfig().Clusters.ToList();
+        //routes.Add(routeConfig);
+        //clusters.Add(clusterConfig);
+        //proxyConfigProvider.Update(routes,clusters);
 
         //var jsonString = JsonSerializer.Serialize(proxyConfigProvider.GetConfig());
         //File.WriteAllText("c:/Temp/routes.txt",jsonString);
 
     }
-    static (RouteConfig RouteConfig, ClusterConfig ClusterConfig) GetRouteConfig(string connectionKey)
+    static (RouteConfig RouteConfig, ClusterConfig ClusterConfig) GetRouteConfig(string connectionKey,HttpContext context)
     {
         var cluster = new ClusterConfig
         {
             ClusterId = $"{connectionKey}-cluster",
-            Destinations = new ConcurrentDictionary<string, DestinationConfig>(new List<KeyValuePair<string, DestinationConfig>> { new("default", GetDestinationConfig(connectionKey)) })
+            Destinations = new ConcurrentDictionary<string, DestinationConfig>(new List<KeyValuePair<string, DestinationConfig>> { new("default", GetDestinationConfig(connectionKey, context)) })
         };
 
         var route = new RouteConfig
@@ -183,14 +219,15 @@ public static class TunnelExensions
         };
 
         (RouteConfig RouteConfig, ClusterConfig ClusterConfig) result = (route, cluster);
+
         return result;
     }
-    static DestinationConfig GetDestinationConfig(string connectionKey)
+    static DestinationConfig GetDestinationConfig(string connectionKey, HttpContext context)
     {
         var result = new DestinationConfig
         {
             // Address = $"http://{connectionKey}.proxy.{Guid.NewGuid()}.app"
-            Address = $"http://backend1.app"
+            Address = $"https://{context.Connection.LocalIpAddress}:{context.Connection.LocalPort}"
         };
         return result;
 

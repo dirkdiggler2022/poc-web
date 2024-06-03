@@ -1,10 +1,4 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
   "ReverseProxy": {
     "Routes": {
       //this is the route for the "defaultagent" used during development
@@ -32,10 +26,10 @@
         "Destinations": {
           "default": {
             //must be http
-            "Address": "https://localhost:7243"
+            "Address": "http://backend1.app"
           },
           "default/2": {
-          "Address": "http://localhost:5212"
+            "Address": "http://google.com"
           }
         }
       }

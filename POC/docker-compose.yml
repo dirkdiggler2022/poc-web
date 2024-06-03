@@ -14,20 +14,51 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-      - proxy_config_volume:/app/
+      - proxy_config_volume:/app/proxy-config
     deploy:
       replicas: 3
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
 
     ports:
       - "8080:8080"
       - "8081:8081"
+      - "4022:4022"
     networks:
       - mynetwork
+ 
+  public-proxy:
+    image: ${DOCKER_REGISTRY-}publicproxy
+    build:
+      context: .
+      dockerfile: Public.Proxy/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    ports:
+      - "8083:8080"
+      - "8084:8081"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+    networks:
+      - mynetwork
+
+
+
+
+
 volumes:
   proxy_config_volume:
+    external: true
 networks:
   mynetwork:
     driver: overlay
+

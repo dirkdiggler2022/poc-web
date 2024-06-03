@@ -4,7 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "public.frontend": "StartDebugging"
+        "public.frontend": "StartDebugging",
+        "public.proxy": "StartDebugging"
       }
     }
   }

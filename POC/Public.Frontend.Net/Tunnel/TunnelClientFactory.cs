@@ -9,7 +9,7 @@ namespace Public.Frontend.Net.Tunnel;
 /// <summary>
 /// The factory that YARP will use the create outbound connections by host name.
 /// </summary>
-internal class TunnelClientFactory : ForwarderHttpClientFactory
+public class TunnelClientFactory : ForwarderHttpClientFactory
 {
     // TODO: These values should be populated by configuration so there's no need to remove
     // channels.
@@ -43,6 +43,7 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
 
         handler.ConnectCallback = async (connectionContext, cancellationToken) =>
         {
+            
             var connectionKey = connectionContext.GetConnectionKey();
 
             if (!string.IsNullOrEmpty(connectionKey) && _clusterConnections.TryGetValue(connectionKey, out var pair))

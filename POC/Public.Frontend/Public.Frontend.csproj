@@ -17,4 +17,10 @@
     <ProjectReference Include="..\Public.Frontend.Net\Public.Frontend.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="proxy-config-old\proxy.config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
