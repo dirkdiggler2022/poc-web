@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using Public.Frontend.Net.Utilities;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using Public.Frontend.Net;
 using Public.Frontend.Net.Configuration;
 using Yarp.ReverseProxy.Configuration;
@@ -66,7 +68,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapWebSocketTunnel(this IEndpointRouteBuilder routes, string path)
     {
-        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory,IProxyConfigProvider proxyConfigProvider, IHostApplicationLifetime lifetime) =>
+        var conventionBuilder = routes.MapGet(path, static async (HttpContext context,TunnelClientFactory tunnelFactory,IProxyConfigProvider proxyConfigProvider,IConfiguration configuration, IHostApplicationLifetime lifetime) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -75,6 +77,7 @@ public static class TunnelExensions
 
 
             var connectionKey = context.GetConnectionKey();
+
             //var proxyConfig = proxyConfigProvider.GetConfig();
             //var cluster = proxyConfig.Clusters.SingleOrDefault(n => n.ClusterId.Equals($"{connectionKey}-cluster"));
             //if (cluster != null)
@@ -84,7 +87,10 @@ public static class TunnelExensions
 
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
             //CreateDynamicRoute(connectionKey,proxyConfigProvider,context);
+            await RegisterListener(context, connectionKey, configuration);
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
+
+
 
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"Connected at {context.Connection.LocalIpAddress} {context.Connection.LocalPort}"));
 
@@ -233,6 +239,12 @@ public static class TunnelExensions
 
     }
 
+    static async Task RegisterListener(HttpContext context, string connectionKey, IConfiguration config)
+    {
+        var client = new HttpClient();
+        var message = new HttpRequestMessage(HttpMethod.Get, $"{config["PublicProxyUrl"]}/10.2.2.2");
+        await client.SendAsync(message);
+    }
     static IReadOnlyList<IReadOnlyDictionary<string, string>> GetTransforms()
     {
         var result = new List<Dictionary<string, string>>();

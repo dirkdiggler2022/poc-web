@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Public.Proxy.Configuration;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.LoadBalancing;
 
 namespace Public.Proxy
 {
@@ -15,6 +16,9 @@ namespace Public.Proxy
             //loads our routes, probably will be cosmo or azure configs
             var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
 
+            var proxyLoadBalancingPolicy = new ProxyLoadBalancingPolicy();
+            builder.Services.AddSingleton<ILoadBalancingPolicy>(proxyLoadBalancingPolicy);
+            
             builder.Services.AddReverseProxy()
             //    .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -35,6 +39,13 @@ namespace Public.Proxy
 
             });
 
+            app.MapGet("/register/{**catch-all}", (HttpContext context) =>
+            {
+                //var proxyPolicy = policy as ProxyLoadBalancingPolicy;
+                proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
+               //proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
+                return "Ok";
+            });
             app.Run();
         }
     }
