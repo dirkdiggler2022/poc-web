@@ -27,6 +27,8 @@ services:
       - "4022:4022"
     networks:
       - mynetwork
+    depends_on: 
+        - public-proxy
  
   public-proxy:
     image: ${DOCKER_REGISTRY-}publicproxy

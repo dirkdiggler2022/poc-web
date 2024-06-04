@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
@@ -73,10 +74,17 @@ namespace Public.Frontend
                 return $"{hostInfo} is Healthy";
             });
 
+            app.Map("/proxy-health", (HttpContext context) =>
+            {
+                return HttpStatusCode.OK;
+            });
+
             app.Map("/Forward/{**catch-all}", async (HttpContext context, IHttpForwarder forwarder, DirectForwardingService forwardingService) =>
             {
                 await forwardingService.Forward(context, forwarder);
             });
+
+          //  app.RegisterProxy();
 
             app.Run();
         }

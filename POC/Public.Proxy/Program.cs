@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using Public.Proxy.Configuration;
 using Yarp.ReverseProxy.Configuration;
@@ -14,17 +15,23 @@ namespace Public.Proxy
 
 
             //loads our routes, probably will be cosmo or azure configs
-            var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
+         //   var routeLoader = new CustomConfigurationLoader().GetProvider().GetConfig();
 
             var proxyLoadBalancingPolicy = new ProxyLoadBalancingPolicy();
             builder.Services.AddSingleton<ILoadBalancingPolicy>(proxyLoadBalancingPolicy);
-            
+
+
+            builder.Services.AddSingleton<ProxyInfo>();
+
             builder.Services.AddReverseProxy()
-            //    .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
+            .LoadFromMemory(new List<RouteConfig>(), new List<ClusterConfig>());
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+            //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
             var app = builder.Build();
+
+            //var inMemoryConfigProvider = app.Services.GetRequiredService<InMemoryConfigProvider>();
+            //inMemoryConfigProvider.GetConfig().
 
             app.MapReverseProxy();
 
@@ -45,6 +52,17 @@ namespace Public.Proxy
                 proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
                //proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
                 return "Ok";
+            });
+
+            app.Map("/register-proxy", (HttpContext context, ProxyInfo proxyInfo) =>
+            {
+                proxyInfo.RegisterProxyHost(context);
+            });
+
+            app.Map("/proxy-health/{**catch-all}", (HttpContext context, ProxyInfo proxyInfo) =>
+            {
+                return HttpStatusCode.OK;
+                //proxyInfo.RegisterProxyHost(context);
             });
             app.Run();
         }
