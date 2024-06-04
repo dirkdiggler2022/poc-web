@@ -21,7 +21,7 @@ public static class TunnelExensions
 
     public static IEndpointConventionBuilder MapHttp2Tunnel(this IEndpointRouteBuilder routes, string path)
     {
-        return routes.MapPost(path, static async (HttpContext context, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime) =>
+        return routes.MapPost(path, static async (HttpContext context, TunnelClientFactory tunnelFactory, IHostApplicationLifetime lifetime, ILogger logger) =>
         {
             // HTTP/2 duplex stream
             if (context.Request.Protocol != HttpProtocol.Http2)
@@ -32,7 +32,7 @@ public static class TunnelExensions
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
-            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via http2"));
+            logger.LogInformation(LoggingExtensions.GetWrappedMessage($"{connectionKey} connected via http2"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
@@ -69,7 +69,7 @@ public static class TunnelExensions
             var connectionKey = context.GetConnectionKey();
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
 
-            StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
+            LoggingExtensions.Logger.LogInformation(LoggingExtensions.GetWrappedMessage($"{connectionKey} connected via websockets"));
 
             await requests.Reader.ReadAsync(context.RequestAborted);
 
