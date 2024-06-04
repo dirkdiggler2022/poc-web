@@ -5,6 +5,7 @@ namespace Private.Agent
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Logging.AddLog4Net("log4net.config");
 
             builder.Services.AddReverseProxy()
                 .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));

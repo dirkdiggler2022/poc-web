@@ -16,7 +16,8 @@ namespace Public.Frontend
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Logging.AddConsole();
-
+            builder.Logging.AddLog4Net("log4net.config");
+      
             builder.WebHost.ConfigureKestrel(options =>
             {
                 //need for ngrok, not sure if needed in platform
