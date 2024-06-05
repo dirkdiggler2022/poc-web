@@ -7,3 +7,6 @@
 /Private.Agent.Alpha/obj
 /Private.Agent.Beta/obj
 /Private.Agent.Charlie/obj
+/Private.Agent.Alpha/bin/Debug/net8.0
+/Private.Agent.Beta/bin/Debug/net8.0
+/Private.Agent.Charlie/bin/Debug/net8.0
