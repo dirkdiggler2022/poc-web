@@ -87,7 +87,7 @@ public static class TunnelExensions
 
             var (requests, responses) = tunnelFactory.GetConnectionChannel(connectionKey);
             //CreateDynamicRoute(connectionKey,proxyConfigProvider,context);
-            await RegisterListener(context, connectionKey, configuration);
+            await RegisterPublicProxyEndpoint(configuration, connectionKey, context.Request.Host.ToString()); 
             StaticLogger.Logger.LogInformation(StaticLogger.GetWrappedMessage($"{connectionKey} connected via websockets"));
 
 
@@ -166,7 +166,15 @@ public static class TunnelExensions
         });
     }
 
-
+    public static async Task RegisterPublicProxyEndpoint(IConfiguration configuration, string connectionKey, string address)
+    {
+        var proxyUrl = configuration["PublicProxyEndpoint"];
+        var message = new HttpRequestMessage(HttpMethod.Post, $"{proxyUrl}/RegisterEndpoint/");
+        message.Headers.Add("X-Connection-Key", new List<string?>{connectionKey});
+        message.Headers.Add("X-Tunnel-Host",new List<string?>{address});
+        var client = new HttpClient();
+        await client.SendAsync(message);
+    }
     static void CreateDynamicRoute(string connectionKey, InMemoryConfigProvider proxyConfigProvider,HttpContext context)
     {
 

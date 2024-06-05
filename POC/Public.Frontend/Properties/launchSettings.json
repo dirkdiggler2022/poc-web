@@ -13,7 +13,8 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PublicProxyEndpoint": "https://localhost:7087"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://*:7243;http://*:5212"

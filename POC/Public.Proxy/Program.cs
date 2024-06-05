@@ -21,9 +21,11 @@ namespace Public.Proxy
 
 
             builder.Services.AddSingleton<ProxyInfoService>();
+            builder.Services.AddSingleton<ServiceDiscoveryManager>();
+
 
             builder.Services.AddReverseProxy()
-            //    .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
+                .LoadFromMemory(new List<RouteConfig>(), new List<ClusterConfig>())
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
             .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -33,7 +35,7 @@ namespace Public.Proxy
 
             // Uncomment to support websocket connections
 
-            app.Map("/routes", (HttpContext context, IProxyConfigProvider proxyConfigProvider) =>
+            app.Map("/routes", (HttpContext context, InMemoryConfigProvider proxyConfigProvider) =>
             {
 
                 var proxyConfig = proxyConfigProvider.GetConfig();
@@ -49,13 +51,15 @@ namespace Public.Proxy
                 proxyInfoService.UpdateProxyConnectionStatus(context);
                 
             });
-            app.MapGet("/register/{**catch-all}", (HttpContext context) =>
+
+            app.MapPost("/RegisterEndpoint", (HttpContext context,ServiceDiscoveryManager serviceDiscoveryManager) =>
             {
-                //var proxyPolicy = policy as ProxyLoadBalancingPolicy;
-                proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
-               //proxyLoadBalancingPolicy.AddServerRegistration("Agent1","https://localhost:7243");
+
+
+                serviceDiscoveryManager.UpdateRegistrations(context);
                 return "Ok";
             });
+
             app.Run();
         }
     }
