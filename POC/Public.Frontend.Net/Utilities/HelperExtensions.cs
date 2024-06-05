@@ -20,8 +20,8 @@ namespace Public.Frontend.Net.Utilities
             string result = GlobalConstants.DEFAULT_TEST_CONNECTION_KEY;
             if (context.Request.RouteValues.TryGetValue("connectionKey", out var testValue))
                 result = testValue?.ToString();
-           // return result;
-           return "Agent1";
+           return result;
+
         }
 
         //gets the connection key when calls to proxy are made 
@@ -31,8 +31,8 @@ namespace Public.Frontend.Net.Utilities
             string result = GlobalConstants.DEFAULT_TEST_CONNECTION_KEY;
             if (context.InitialRequestMessage.Headers.TryGetValues(GlobalConstants.CONNECTION_KEY_HEADER_NAME, out var tryValues))
                 result = tryValues.SingleOrDefault() ?? string.Empty;
-            // return result;
-            return "Agent1";
+            return result;
+ 
         }
     }
 }

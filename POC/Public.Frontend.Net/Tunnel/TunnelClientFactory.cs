@@ -68,9 +68,9 @@ public class TunnelClientFactory : ForwarderHttpClientFactory
                     return stream;
                 }
             }
-            // return await previous(connectionContext, cancellationToken);
+             return await previous(connectionContext, cancellationToken);
             // JC Don't try to access a site unless a backend connection is registered
-            return Stream.Null;
+            //return Stream.Null;
         };
     }
 
