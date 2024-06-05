@@ -39,6 +39,12 @@ namespace Public.Proxy
 
             });
 
+
+            app.Map("/health", (HttpContext context) =>
+            {
+                var hostInfo = $"Local = {context.Connection.LocalIpAddress}:{context.Connection.LocalPort};  Remote = {context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}; ";
+                return $"{hostInfo} is Healthy";
+            });
             app.MapGet("/register/{**catch-all}", (HttpContext context) =>
             {
                 //var proxyPolicy = policy as ProxyLoadBalancingPolicy;
