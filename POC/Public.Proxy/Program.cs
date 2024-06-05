@@ -18,7 +18,10 @@ namespace Public.Proxy
 
             var proxyLoadBalancingPolicy = new ProxyLoadBalancingPolicy();
             builder.Services.AddSingleton<ILoadBalancingPolicy>(proxyLoadBalancingPolicy);
-            
+
+
+            builder.Services.AddSingleton<ProxyInfoService>();
+
             builder.Services.AddReverseProxy()
             //    .LoadFromMemory(routeLoader.Routes, routeLoader.Clusters);
                 //.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -40,10 +43,11 @@ namespace Public.Proxy
             });
 
 
-            app.Map("/health", (HttpContext context) =>
+            app.Map("/health", (HttpContext context, ProxyInfoService proxyInfoService) =>
             {
-                var hostInfo = $"Local = {context.Connection.LocalIpAddress}:{context.Connection.LocalPort};  Remote = {context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}; ";
-                return $"{hostInfo} is Healthy";
+                //var hostInfo = $"Local = {context.Connection.LocalIpAddress}:{context.Connection.LocalPort};  Remote = {context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}; ";
+                proxyInfoService.UpdateProxyConnectionStatus(context);
+                
             });
             app.MapGet("/register/{**catch-all}", (HttpContext context) =>
             {
