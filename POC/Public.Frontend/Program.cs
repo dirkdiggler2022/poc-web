@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
@@ -18,8 +19,11 @@ namespace Public.Frontend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Configuration.AddJsonFile("proxy-config/proxy.config.json", true,true);
-            builder.Configuration.AddJsonFile("proxy-config-old/proxy.config.json", true, true);
+            //builder.Configuration.AddJsonFile("proxy-config/proxy.config.json", true,true);
+            //builder.Configuration.AddJsonFile("proxy-config-old/proxy.config.json", true, true);
+
+
+
 
             builder.Logging.AddConsole();
             
@@ -78,6 +82,7 @@ namespace Public.Frontend
                 await forwardingService.Forward(context, forwarder);
             });
 
+            
             app.Run();
         }
 
