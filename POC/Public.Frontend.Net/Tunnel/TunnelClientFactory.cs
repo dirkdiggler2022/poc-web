@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Threading.Channels;
 using Public.Frontend.Net.Utilities;
@@ -55,19 +56,30 @@ internal class TunnelClientFactory : ForwarderHttpClientFactory
                 while (true)
                 {
                     var stream = await responses.Reader.ReadAsync(cancellationToken);
-
-                    if (stream is ICloseable c && c.IsClosed)
+                    try
                     {
-                        // Ask for another connection
-                        await requests.Writer.WriteAsync(0, cancellationToken);
+                        if (stream is ICloseable c && c.IsClosed)
+                        {
+                            // Ask for another connection
+                            await requests.Writer.WriteAsync(0, cancellationToken);
 
-                        continue;
+                            continue;
+                        }
+
+
+                        return stream;
                     }
-
-                    return stream;
+                    catch (Exception ex)
+                    {
+                        await stream.DisposeAsync();
+                        return null;
+                    }
                 }
+
             }
+
             return await previous(connectionContext, cancellationToken);
+
         };
     }
 }
